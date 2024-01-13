@@ -1,5 +1,6 @@
 from __future__ import absolute_import, print_function, division, unicode_literals
 from PIL import Image
+import curses
 
 
 import argparse
@@ -13,10 +14,6 @@ parser.add_argument(
 parser.add_argument(
     "config_file",
     help="CFG file with settings of the ViZDoom scenario.")
-parser.add_argument(
-    "path_to_save_images",
-    help="Path to save imagens of the game",
-    default="")
 parser.add_argument(
     "-n", "--num-games",
     type=int,
@@ -47,6 +44,11 @@ import numpy as np
 import skimage.color, skimage.transform
 import os
 
+from PIL import Image as PilImage
+from omnixai.data.image import Image
+from omnixai.preprocessing.image import Resize
+from omnixai.explainers.vision.specific.gradcam import GradCAM
+
 from cv2 import resize
 from tqdm import trange
 from time import time, sleep
@@ -57,6 +59,7 @@ from tensorflow import keras
 # use the same maps to ensure a fair comparison
 import test_maps
 
+import cv2
 
 # limit gpu usage
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -89,18 +92,62 @@ def initialize_vizdoom(args):
     game = vizdoom.DoomGame()
     print(args.config_file)
     game.load_config(args.config_file)
-    game.set_window_visible(not args.disable_window)
+    game.set_window_visible(False)
     game.set_mode(vizdoom.Mode.ASYNC_PLAYER)
     game.set_screen_format(vizdoom.ScreenFormat.GRAY8)
     game.set_screen_resolution(vizdoom.ScreenResolution.RES_640X480)
     game.init()
     print("[.1] ... ViZDoom initialized.")
     return game
+import cv2
+import curses
 
-def create_image(state,args,count,best_action_index,episode):
-    s = state * 255
-    imagem = Image.fromarray(s.astype('uint8'))
-    imagem.save(f'{args.path_to_save_images}/image_{episode+1}_{count}_{best_action_index}.png')
+def render_image(state):
+    # Inicializa a tela usando curses
+    stdscr = curses.initscr()
+    curses.cbreak()
+    stdscr.keypad(True)
+
+    # Renderiza a imagem redimensionada
+    cv2.imshow('Rendered Image', state)
+    cv2.waitKey(0)  # Aguarda até que uma tecla seja pressionada
+
+    # Atualiza a tela do curses
+    stdscr.refresh()
+
+    # Continue o loop após a tecla Q ser pressionada
+    return
+
+def calculate_grad_cam(model, image):
+    explainer = GradCAM(
+        model=model,
+        target_layer=model.layers[2],
+        preprocess_function=None
+    )
+    img = PilImage.fromarray(np.uint8((image*255)))
+    img = Resize((48, 64)).transform(Image(img))
+    explanations = explainer.explain(img)
+    scores = explanations.get_explanations()[0]['scores']
+    return scores
+
+def blend_images(score, image):
+    alpha = 1.0
+    beta = 0.5
+    gamma = 0.5
+    matriz_heatmap = cv2.applyColorMap((score*255).astype('uint8'), cv2.COLORMAP_JET)
+    
+    s = (image * 255)
+    img = np.zeros((48,64,3))
+    img[:,:,0] = s
+    img[:,:,1] = s
+    img[:,:,2] = s
+    img = img.astype('uint8')
+    # imagem = PilImage.fromarray(s.astype('uint8'))
+    # imagem.save(f'blend.png')
+    # img = cv2.imread(f'blend.png')
+    blended_image = cv2.addWeighted(img, alpha, matriz_heatmap, beta, gamma)
+    # img = cv2.resize(blended_image, (192, 256))
+    return blended_image
 
 
 if __name__ == "__main__":
@@ -139,6 +186,7 @@ if __name__ == "__main__":
     episode_time = []
     start_time = time()
     for i in trange(args.num_games, leave=True):
+        print("ARROOOOOOOOOOOOOOZ")
         print(test_maps.TEST_MAPS[i])
         game.set_seed(test_maps.TEST_MAPS[i])
         game.new_episode()
@@ -148,8 +196,11 @@ if __name__ == "__main__":
         while not game.is_episode_finished():
             state = preprocess(game.get_state().screen_buffer)
             best_action_index = get_best_action(model, state)
-            create_image(state, args, count, best_action_index,i)
+            score = calculate_grad_cam(model, state)
+            blend_image = blend_images(score, state)
+            render_image(blend_image)
             count+=1
+            print(count)
             game.set_action(actions[best_action_index])
             
             for _ in range(frame_repeat):
@@ -179,3 +230,4 @@ if __name__ == "__main__":
             total_elapsed_time, episode_time.sum(), scores.min(), scores.max(), scores.mean(), scores.std()), file=log_file)
                 
     game.close()
+    cv2.destroyAllWindows()
