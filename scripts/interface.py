@@ -93,7 +93,7 @@ def initialize_vizdoom(args):
     print(args.config_file)
     game.load_config(args.config_file)
     game.set_window_visible(False)
-    game.set_mode(vizdoom.Mode.ASYNC_PLAYER)
+    game.set_mode(vizdoom.Mode.PLAYER)
     game.set_screen_format(vizdoom.ScreenFormat.GRAY8)
     game.set_screen_resolution(vizdoom.ScreenResolution.RES_640X480)
     game.init()
@@ -147,6 +147,7 @@ def blend_images(score, image):
     # img = cv2.imread(f'blend.png')
     blended_image = cv2.addWeighted(img, alpha, matriz_heatmap, beta, gamma)
     # img = cv2.resize(blended_image, (192, 256))
+    blended_image = cv2.resize(blended_image, (blended_image.shape[1]*8, blended_image.shape[0]*8))
     return blended_image
 
 
@@ -186,8 +187,6 @@ if __name__ == "__main__":
     episode_time = []
     start_time = time()
     for i in trange(args.num_games, leave=True):
-        print("ARROOOOOOOOOOOOOOZ")
-        print(test_maps.TEST_MAPS[i])
         game.set_seed(test_maps.TEST_MAPS[i])
         game.new_episode()
         
@@ -205,7 +204,10 @@ if __name__ == "__main__":
             
             for _ in range(frame_repeat):
                 game.advance_action()
-                
+                if game.get_state() != None:
+                    state = preprocess(game.get_state().screen_buffer)
+                    blend_image = blend_images(score, state)
+                    render_image(blend_image)
         ep_time = time() - ep_start_time
         episode_time.append(ep_time)
         
