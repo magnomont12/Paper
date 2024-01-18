@@ -24,6 +24,8 @@ def criar_video(images):
     episode = images[0].split("_")[1]
     frame = cv2.imread(os.path.join(image_folder, images[0]))
     height, width, _ = frame.shape
+    height = height*8
+    width = width*8
     video = cv2.VideoWriter(os.path.join(image_folder,f'video_{episode}.avi'), cv2.VideoWriter_fourcc(*'DIVX'), 1, (width, height))
     for image in images:
         img = cv2.imread(os.path.join(image_folder, image))

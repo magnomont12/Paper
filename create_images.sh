@@ -26,7 +26,6 @@ for suffix in "${suffix_list[@]}"; do
         python3 "$create_visu" "$image" "$score" "$blend"
 
         python3 "$create_video" "$blend"
-        break
     done < "$input_file"
   
 done

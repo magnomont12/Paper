@@ -178,3 +178,5 @@ cython_debug/
 
 models/
 *.png
+*.avi
+*.npy

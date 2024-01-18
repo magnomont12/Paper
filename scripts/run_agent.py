@@ -21,7 +21,7 @@ parser.add_argument(
     "-n", "--num-games",
     type=int,
     metavar="N",
-    default=1,
+    default=5,
     help="Number of games to play. [default=5]")
 parser.add_argument(
     "-show", "--show-model",
@@ -90,7 +90,7 @@ def initialize_vizdoom(args):
     print(args.config_file)
     game.load_config(args.config_file)
     game.set_window_visible(not args.disable_window)
-    game.set_mode(vizdoom.Mode.ASYNC_PLAYER)
+    game.set_mode(vizdoom.Mode.PLAYER)
     game.set_screen_format(vizdoom.ScreenFormat.GRAY8)
     game.set_screen_resolution(vizdoom.ScreenResolution.RES_640X480)
     game.init()
