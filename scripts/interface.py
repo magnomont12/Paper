@@ -85,13 +85,23 @@ def get_q_values(model, state):
 def get_best_action(model, state):
     s = state.reshape([1, resolution[0], resolution[1], 1])
     return tf.argmax(get_q_values(model, s)[0])
-            
 
-def initialize_vizdoom(args):
+def encontrar_arquivos_cfg(pasta_raiz):
+    arquivos_cfg = []
+
+    for pasta_atual, subpastas, arquivos in os.walk(pasta_raiz):
+        for arquivo in arquivos:
+            if arquivo.endswith(".cfg"):
+                caminho_completo = os.path.join(pasta_atual, arquivo)
+                arquivos_cfg.append(caminho_completo)
+
+    return arquivos_cfg
+            
+def initialize_vizdoom(config_file):
     print("[1.] Initializing ViZDoom...")
     game = vizdoom.DoomGame()
-    print(args.config_file)
-    game.load_config(args.config_file)
+    print(config_file)
+    game.load_config(config_file)
     game.set_window_visible(False)
     game.set_mode(vizdoom.Mode.PLAYER)
     game.set_screen_format(vizdoom.ScreenFormat.GRAY8)
@@ -109,6 +119,24 @@ def render_image(state):
     stdscr.keypad(True)
 
     # Renderiza a imagem redimensionada
+    cv2.imshow('Rendered Image', state)
+    cv2.waitKey(0)  # Aguarda até que uma tecla seja pressionada
+
+    # Atualiza a tela do curses
+    stdscr.refresh()
+
+    # Continue o loop após a tecla Q ser pressionada
+    return
+
+def render_many_images(states):
+    stdscr = curses.initscr()
+    curses.cbreak()
+    stdscr.keypad(True)
+    states.extend([np.zeros_like(states[0]), np.zeros_like(states[0])])
+
+    # Crie um array numpy empilhando as imagens
+    state = np.vstack([np.hstack(states[i:i+6]) for i in range(0, 36, 6)])
+
     cv2.imshow('Rendered Image', state)
     cv2.waitKey(0)  # Aguarda até que uma tecla seja pressionada
 
@@ -142,16 +170,19 @@ def blend_images(score, image):
     img[:,:,1] = s
     img[:,:,2] = s
     img = img.astype('uint8')
-    # imagem = PilImage.fromarray(s.astype('uint8'))
-    # imagem.save(f'blend.png')
-    # img = cv2.imread(f'blend.png')
     blended_image = cv2.addWeighted(img, alpha, matriz_heatmap, beta, gamma)
-    # img = cv2.resize(blended_image, (192, 256))
-    blended_image = cv2.resize(blended_image, (blended_image.shape[1]*8, blended_image.shape[0]*8))
+    blended_image = cv2.resize(blended_image, (blended_image.shape[1]*2, blended_image.shape[0]*2))
     return blended_image
+
+def verify_all_games_end():
+    for game in games:
+        if not game.is_episode_finished():
+            return False
+    return True
 
 
 if __name__ == "__main__":
+    num_of_scenarios = 34
 
     # load model
     if (os.path.isdir(args.model_folder)):
@@ -165,71 +196,44 @@ if __name__ == "__main__":
         model.summary()        
         keras.utils.plot_model(model, args.show_model + ".png", show_shapes=True)
     
-    
-    # create vizdoom game
-    game = initialize_vizdoom(args)
+    games = []
+    config_files = encontrar_arquivos_cfg(args.config_file)
+    for config_file in config_files:
+        games.append(initialize_vizdoom(config_file))
 
-    num_actions = game.get_available_buttons_size()
+    num_actions = games[0].get_available_buttons_size()
     actions = [list(a) for a in it.product([0, 1], repeat=num_actions)]
 
-
-    # open file to save resultsMap: line
-    if args.log_file:
-        log_file = open(args.log_file, "w", buffering=1)
-        print("Map,{}".format(args.config_file), file=log_file)
-        print("Resolution,{}".format(resolution), file=log_file)
-        print("Frame Repeat,{}".format(frame_repeat), file=log_file)
-        print("Number of Games,{}".format(args.num_games), file=log_file)
-        print("Elapsed time,Score min,Score max,Score mean,Score std", file=log_file)
-    
-
-    scores = []
-    episode_time = []
-    start_time = time()
     for i in trange(args.num_games, leave=True):
-        game.set_seed(test_maps.TEST_MAPS[i])
-        game.new_episode()
+        for game in games:
+            game.set_seed(test_maps.TEST_MAPS[i])
+            game.new_episode()
         
-        ep_start_time = time()
-        count = 1
-        while not game.is_episode_finished():
-            state = preprocess(game.get_state().screen_buffer)
-            best_action_index = get_best_action(model, state)
-            score = calculate_grad_cam(model, state)
-            blend_image = blend_images(score, state)
-            render_image(blend_image)
-            count+=1
-            print(count)
-            game.set_action(actions[best_action_index])
-            
-            for _ in range(frame_repeat):
-                game.advance_action()
-                if game.get_state() != None:
+        while not verify_all_games_end():
+            images = []
+            for game in games:
+                if not game.is_episode_finished():
                     state = preprocess(game.get_state().screen_buffer)
+                    best_action_index = get_best_action(model, state)
+                    score = calculate_grad_cam(model, state)
                     blend_image = blend_images(score, state)
-                    render_image(blend_image)
-        ep_time = time() - ep_start_time
-        episode_time.append(ep_time)
-        
-        score = game.get_total_reward()
-        scores.append(score)
-        
-        if args.log_file:
-            print("{:.2f},{}".format(ep_time, score), file=log_file)
+                    images.append(blend_image)
+                    game.set_action(actions[best_action_index])
+                else:
+                    images.append(np.zeros((resolution[0]*2, resolution[1]*2,3), dtype=np.uint8))
+            render_many_images(images)
 
-        if (not args.disable_window):
-            print("Score ep. " + str(i) + ": " + "{:2.0f}".format(score))
-            sleep(1.0)
+            for _ in range(frame_repeat):
+                images = []
+                for game in games:
+                    game.advance_action()
+                    if game.get_state() != None:
+                        state = preprocess(game.get_state().screen_buffer)
+                        blend_image = blend_images(score, state)
+                        images.append(blend_image)
+                    else:
+                        images.append(np.ones((resolution[0]*2, resolution[1]*2,3), dtype=np.uint8))      
+                render_many_images(images)
     
-    total_elapsed_time = time() - start_time
-    scores = np.array(scores)
-    episode_time = np.array(episode_time)
-    
-    print("Results: mean: %.1f±%.1f," % (scores.mean(), scores.std()), "min: %.1f" % scores.min(), "max: %.1f" % scores.max())
-    
-    if args.log_file:
-        print("{:.2f},{:.2f},{},{},{},{:.2f}".format(
-            total_elapsed_time, episode_time.sum(), scores.min(), scores.max(), scores.mean(), scores.std()), file=log_file)
-                
-    game.close()
-    cv2.destroyAllWindows()
+    for game in games:
+        game.close()
