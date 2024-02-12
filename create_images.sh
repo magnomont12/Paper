@@ -12,6 +12,8 @@ for suffix in "${suffix_list[@]}"; do
 
     create_video="scripts/create_video.py"
 
+    create_mean="scripts/calculate_mean.py"
+
     if [ ! -f "$input_file" ]; then
         echo "Arquivo $input_file não encontrado."
         exit 1
@@ -26,6 +28,11 @@ for suffix in "${suffix_list[@]}"; do
         python3 "$create_visu" "$image" "$score" "$blend"
 
         python3 "$create_video" "$blend"
+
+        python3 "$create_mean" "$score"
+
+        break
     done < "$input_file"
+    break
   
 done

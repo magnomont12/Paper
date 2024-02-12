@@ -182,6 +182,7 @@ def calculate_shap(model, image):
     img = PilImage.fromarray(np.uint8((image*255)))
     img = Resize((48, 64)).transform(Image(img))
     explanations = explainer.explain(img)
+    print("ARROOOOOOZ")
     scores = explanations.get_explanations()[0]['scores']
     scores = np.clip(scores,0,scores.max())
     return scores
@@ -257,7 +258,7 @@ if __name__ == "__main__":
                     game.advance_action()
                     if game.get_state() != None:
                         state = preprocess(game.get_state().screen_buffer)
-                        score = calculate_grad_cam(model, state)
+                        score = calculate_shap(model, state)
                         blend_image = blend_images(score, state)
                         images.append(blend_image)
                     else:
