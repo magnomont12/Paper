@@ -257,6 +257,7 @@ if __name__ == "__main__":
                     game.advance_action()
                     if game.get_state() != None:
                         state = preprocess(game.get_state().screen_buffer)
+                        score = calculate_grad_cam(model, state)
                         blend_image = blend_images(score, state)
                         images.append(blend_image)
                     else:
