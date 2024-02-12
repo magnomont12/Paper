@@ -48,6 +48,9 @@ from PIL import Image as PilImage
 from omnixai.data.image import Image
 from omnixai.preprocessing.image import Resize
 from omnixai.explainers.vision.specific.gradcam import GradCAM
+from omnixai.explainers.vision import IntegratedGradientImage
+from omnixai.explainers.vision import ShapImage
+from omnixai.explainers.vision import LimeImage
 
 from cv2 import resize
 from tqdm import trange
@@ -156,6 +159,31 @@ def calculate_grad_cam(model, image):
     img = Resize((48, 64)).transform(Image(img))
     explanations = explainer.explain(img)
     scores = explanations.get_explanations()[0]['scores']
+    return scores
+
+def calculate_ig(model, image):
+    explainer = IntegratedGradientImage(
+        model=model,
+        target_layer=model.layers[2],
+        preprocess_function=None,
+    )
+    img = PilImage.fromarray(np.uint8((image*255)))
+    img = Resize((48, 64)).transform(Image(img))
+    explanations = explainer.explain(img)
+    scores = explanations.get_explanations()[0]['scores']
+    scores = np.clip(scores,0,scores.max())
+    return scores
+
+def calculate_shap(model, image):
+    explainer = ShapImage(
+        model=model,
+        preprocess_function=None,
+    )
+    img = PilImage.fromarray(np.uint8((image*255)))
+    img = Resize((48, 64)).transform(Image(img))
+    explanations = explainer.explain(img)
+    scores = explanations.get_explanations()[0]['scores']
+    scores = np.clip(scores,0,scores.max())
     return scores
 
 def blend_images(score, image):
