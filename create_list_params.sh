@@ -1,5 +1,4 @@
 #!/bin/bash
-
 find_cfg_files() {
   local folder=$1
   local suffix=$2
@@ -21,13 +20,18 @@ create_new_folder() {
   local folder_scores="${file_without_extension/scenarios/scores_$suffix}"
   local folder_blend="${file_without_extension/scenarios/blend_$suffix}"
   
-  mkdir -p "$folder_image"
-  mkdir -p "$folder_scores"
-  mkdir -p "$folder_blend"
+  mkdir -p "$type_viz/scores/$folder_scores"
+  mkdir -p "$type_viz/blends/$folder_blend"
 
-  echo "$path_model,$cfg_file,$folder_image,$folder_scores,$folder_blend" >> "$output_file"
+  echo "$path_model,$cfg_file,images/$folder_image,$type_viz/scores/$folder_scores,$type_viz/blends/$folder_blend" >> "$type_viz/$output_file"
   
 }
+
+type_viz=$1
+echo "Type of visualization: $type_viz"
+mkdir -p "$type_viz"
+mkdir -p "$type_viz/scores"
+mkdir -p "$type_viz/blends"
 
 suffix_list=('animated' 'basic' 'caco' 'flat')
 
