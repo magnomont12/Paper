@@ -51,6 +51,7 @@ from omnixai.explainers.vision.specific.gradcam import GradCAM
 from omnixai.explainers.vision import IntegratedGradientImage
 from omnixai.explainers.vision import ShapImage
 from omnixai.explainers.vision import LimeImage
+from omnixai.data.image import Image
 
 from cv2 import resize
 from tqdm import trange
@@ -88,6 +89,10 @@ def get_q_values(model, state):
 def get_best_action(model, state):
     s = state.reshape([1, resolution[0], resolution[1], 1])
     return tf.argmax(get_q_values(model, s)[0])
+
+def get_best_action_lime(state):
+    #s = state.reshape([1, resolution[0], resolution[1], 1])
+    return tf.argmax(get_q_values(model, state)[0])
 
 def encontrar_arquivos_cfg(pasta_raiz):
     arquivos_cfg = []
@@ -175,16 +180,26 @@ def calculate_ig(model, image):
     return scores
 
 def calculate_shap(model, image):
+    preprocess_func = lambda x: np.expand_dims(x.to_numpy() / 255, axis=-1)
     explainer = ShapImage(
         model=model,
+        preprocess_function=preprocess_func,
+    )
+    img = Image(image.reshape(48,64))
+    explanations = explainer.explain(img)
+    scores = explanations.get_explanations()[0]['scores']
+    return scores
+
+def calculate_lime(model, image):
+    explainer = LimeImage(
+        model=model,
+        predict_function=get_best_action_lime,
         preprocess_function=None,
     )
     img = PilImage.fromarray(np.uint8((image*255)))
     img = Resize((48, 64)).transform(Image(img))
     explanations = explainer.explain(img)
-    print("ARROOOOOOZ")
     scores = explanations.get_explanations()[0]['scores']
-    scores = np.clip(scores,0,scores.max())
     return scores
 
 def blend_images(score, image):
@@ -244,7 +259,7 @@ if __name__ == "__main__":
                 if not game.is_episode_finished():
                     state = preprocess(game.get_state().screen_buffer)
                     best_action_index = get_best_action(model, state)
-                    score = calculate_grad_cam(model, state)
+                    score = calculate_shap(model, state)
                     blend_image = blend_images(score, state)
                     images.append(blend_image)
                     game.set_action(actions[best_action_index])
