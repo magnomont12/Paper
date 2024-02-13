@@ -59,6 +59,7 @@ def blend_ig(images, scores):
         matriz_heatmap = generate_heatmap(data)
         blended_image = cv2.addWeighted(img, alpha, matriz_heatmap, beta, gamma)
         cv2.imwrite(f"{args.path_to_save_blend}/{image}", blended_image)
+        
 
 
 if __name__ == '__main__':
@@ -68,7 +69,7 @@ if __name__ == '__main__':
 
     if args.method == "grad-cam":
         blend_grad_cam(images, scores)
-    elif args.method == "ig":
+    elif args.method == "ig" or args.method == "shap":
         blend_ig(images, scores)
 
 

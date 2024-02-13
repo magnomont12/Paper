@@ -8,6 +8,7 @@ from omnixai.data.image import Image
 from omnixai.preprocessing.image import Resize
 from omnixai.explainers.vision.specific.gradcam import GradCAM
 from omnixai.explainers.vision import IntegratedGradientImage
+from omnixai.explainers.vision import ShapImage
 
 import tensorflow as tf
 from tensorflow import keras
@@ -54,7 +55,17 @@ def scores_ig(model, images):
         scores = explanations.get_explanations()[0]['scores']
         np.save(f"{args.path_to_save_images}/{image.replace('.png','.npy')}", scores)
 
-
+def scores_shap(model, images):
+    preprocess_func = lambda x: np.expand_dims(x.to_numpy() / 255, axis=-1)
+    explainer = ShapImage(
+        model=model,
+        preprocess_function=preprocess_func,
+    )
+    for image in images:
+        img = Resize((48, 64)).transform(Image(PilImage.open(f"{args.path_with_images}/{image}")))
+        explanations = explainer.explain(img)
+        scores = explanations.get_explanations()[0]['scores']
+        np.save(f"{args.path_to_save_images}/{image.replace('.png','.npy')}", scores)
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -64,3 +75,5 @@ if __name__ == '__main__':
         scores_grad_cam(model, images)
     elif args.method == "ig":
         scores_ig(model, images)
+    elif args.method == "shap":
+        scores_shap(model, images)
