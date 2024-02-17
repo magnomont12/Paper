@@ -1,0 +1,18 @@
+tenho essas 11 variáveis e a cada uma delas é um array numpy com shape 48,64,3:
+img_basic_basic = teste[0][a]
+
+        img_basic_animated_ba_25 = teste[1][a]
+        img_basic_animated_ba_50 = teste[2][a]
+        img_basic_animated_ba_75 = teste[3][a]
+
+        img_basic_caco_bc_25 = teste[4][a]
+        img_basic_caco_bc_50 = teste[5][a]
+        img_basic_caco_bc_75 = teste[6][a]
+
+        img_basic_flat_bf_25 = teste[7][a]
+        img_basic_flat_bf_50_1 = teste[8][a]
+        img_basic_flat_bf_50_2 = teste[9][a]
+        img_basic_flat_bf_75 = teste[10][a]
+
+quero fazer a seguinte composição para renderizar no opencv com:
+img_basic_basic,

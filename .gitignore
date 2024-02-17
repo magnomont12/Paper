@@ -184,3 +184,4 @@ models/
 grad-cam/
 ig/
 shap/
+*.zip

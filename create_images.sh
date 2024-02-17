@@ -51,8 +51,6 @@ for suffix in "${suffix_list[@]}"; do
     while IFS=, read -r model scenario image; do
         echo "Model: $model | Scenario: $scenario | Image: $image"
         python3 "$python_script" "$model" "$scenario" "$image"
-        break
     done < "$input_file"
-    break
   
 done
