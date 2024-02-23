@@ -52,74 +52,31 @@ def resize_images(*images):
 
 
 if __name__ == "__main__":
-    ## Basic
-    # basic_basic = create_list_images("grad-cam/blends/blend_basic/0_original/basic/basic")
+    model = "basic"
+    # caco
+    basic_basic = create_list_images(f"grad-cam/blends/blend_basic/0_original/basic/basic")
+    animated_animated = create_list_images(f"grad-cam/blends/blend_animated/0_original/animated/animated")
+    caco_caco = create_list_images(f"grad-cam/blends/blend_caco/0_original/caco/caco")
+    flat_flat= create_list_images(f"grad-cam/blends/blend_flat/0_original/flat/flat")
 
-    # basic_animated_ba_25 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_animated/ba_25")
-    # basic_animated_ba_50 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_animated/ba_50")
-    # basic_animated_ba_75 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_animated/ba_75")
+    basic_animated_ba_25 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_animated/ba_25")
+    basic_animated_ba_50 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_animated/ba_50")
+    basic_animated_ba_75 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_animated/ba_75")
 
-    # basic_caco_bc_25 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_caco/bc_25")
-    # basic_caco_bc_50 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_caco/bc_50")
-    # basic_caco_bc_75 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_caco/bc_75")
+    basic_caco_bc_25 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_caco/bc_25")
+    basic_caco_bc_50 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_caco/bc_50")
+    basic_caco_bc_75 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_caco/bc_75")
 
-    # basic_flat_bf_25 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_flat/bf_25")
-    # basic_flat_bf_50_1 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_flat/bf_50_1")
-    # basic_flat_bf_50_2 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_flat/bf_50_2")
-    # basic_flat_bf_75 = create_list_images("grad-cam/blends/blend_basic/2_blend/basic_flat/bf_75")
+    basic_flat_bf_25 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_flat/bf_25")
+    basic_flat_bf_50_1 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_flat/bf_50_1")
+    basic_flat_bf_50_2 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_flat/bf_50_2")
+    basic_flat_bf_75 = create_list_images(f"grad-cam/blends/blend_{model}/2_blend/basic_flat/bf_75")
 
-    ## animated
-    # basic_basic = create_list_images("grad-cam/blends/blend_animated/0_original/animated/animated")
 
-    # basic_animated_ba_25 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_animated/ba_25")
-    # basic_animated_ba_50 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_animated/ba_50")
-    # basic_animated_ba_75 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_animated/ba_75")
-
-    # basic_caco_bc_25 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_caco/bc_25")
-    # basic_caco_bc_50 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_caco/bc_50")
-    # basic_caco_bc_75 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_caco/bc_75")
-
-    # basic_flat_bf_25 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_flat/bf_25")
-    # basic_flat_bf_50_1 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_flat/bf_50_1")
-    # basic_flat_bf_50_2 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_flat/bf_50_2")
-    # basic_flat_bf_75 = create_list_images("grad-cam/blends/blend_animated/2_blend/basic_flat/bf_75")
-
-    ## caco
-    # basic_basic = create_list_images("grad-cam/blends/blend_caco/0_original/caco/caco")
-
-    # basic_animated_ba_25 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_animated/ba_25")
-    # basic_animated_ba_50 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_animated/ba_50")
-    # basic_animated_ba_75 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_animated/ba_75")
-
-    # basic_caco_bc_25 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_caco/bc_25")
-    # basic_caco_bc_50 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_caco/bc_50")
-    # basic_caco_bc_75 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_caco/bc_75")
-
-    # basic_flat_bf_25 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_flat/bf_25")
-    # basic_flat_bf_50_1 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_flat/bf_50_1")
-    # basic_flat_bf_50_2 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_flat/bf_50_2")
-    # basic_flat_bf_75 = create_list_images("grad-cam/blends/blend_caco/2_blend/basic_flat/bf_75")
-
-    ##flat
-    basic_basic = create_list_images("grad-cam/blends/blend_flat/0_original/flat/flat")
-
-    basic_animated_ba_25 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_animated/ba_25")
-    basic_animated_ba_50 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_animated/ba_50")
-    basic_animated_ba_75 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_animated/ba_75")
-
-    basic_caco_bc_25 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_caco/bc_25")
-    basic_caco_bc_50 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_caco/bc_50")
-    basic_caco_bc_75 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_caco/bc_75")
-
-    basic_flat_bf_25 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_flat/bf_25")
-    basic_flat_bf_50_1 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_flat/bf_50_1")
-    basic_flat_bf_50_2 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_flat/bf_50_2")
-    basic_flat_bf_75 = create_list_images("grad-cam/blends/blend_flat/2_blend/basic_flat/bf_75")
-
-    ep = 4
+    ep = 1
     teste = equalize_length([basic_basic[ep], basic_animated_ba_25[ep], basic_animated_ba_50[ep], basic_animated_ba_75[ep],
                              basic_caco_bc_25[ep], basic_caco_bc_50[ep], basic_caco_bc_75[ep], basic_flat_bf_25[ep],
-                             basic_flat_bf_50_1[ep], basic_flat_bf_50_2[ep], basic_flat_bf_75[ep]])
+                             basic_flat_bf_50_1[ep], basic_flat_bf_50_2[ep], basic_flat_bf_75[ep], animated_animated[ep], caco_caco[ep], flat_flat[ep]])
 
     
     nullable_image = np.zeros((48*3, 64*3,3), dtype=np.uint8)
@@ -140,13 +97,17 @@ if __name__ == "__main__":
         img_basic_flat_bf_50_1 = cv2.resize(teste[8][a], (width, height))
         img_basic_flat_bf_50_2 = cv2.resize(teste[9][a], (width, height))
         img_basic_flat_bf_75 = cv2.resize(teste[10][a], (width, height))
+
+        img_animated_animated = cv2.resize(teste[11][a], (width, height))
+        img_caco_caco = cv2.resize(teste[12][a], (width, height))
+        img_flat_flat = cv2.resize(teste[13][a], (width, height))
         
         print(img_basic_basic.shape, img_basic_animated_ba_25.shape, img_basic_animated_ba_50.shape, img_basic_animated_ba_75.shape, img_basic_caco_bc_25.shape, img_basic_caco_bc_50.shape, img_basic_caco_bc_75.shape, img_basic_flat_bf_25.shape, img_basic_flat_bf_50_1.shape, img_basic_flat_bf_50_2.shape, img_basic_flat_bf_75.shape)
 
         # Criar composições
-        composition1 = cv2.hconcat((img_basic_basic, img_basic_animated_ba_25, img_basic_animated_ba_50, img_basic_animated_ba_75,nullable_image))
-        composition2 = cv2.hconcat((img_basic_basic, img_basic_caco_bc_25, img_basic_caco_bc_50, img_basic_caco_bc_75,nullable_image))
-        composition3 = cv2.hconcat((img_basic_basic, img_basic_flat_bf_25, img_basic_flat_bf_50_1, img_basic_flat_bf_50_2, img_basic_flat_bf_75))
+        composition1 = cv2.hconcat((img_basic_basic, img_basic_animated_ba_25, img_basic_animated_ba_50, img_basic_animated_ba_75,img_animated_animated,nullable_image))
+        composition2 = cv2.hconcat((img_basic_basic, img_basic_caco_bc_25, img_basic_caco_bc_50, img_basic_caco_bc_75,img_caco_caco,nullable_image))
+        composition3 = cv2.hconcat((img_basic_basic, img_basic_flat_bf_25, img_basic_flat_bf_50_1, img_basic_flat_bf_50_2, img_basic_flat_bf_75,img_flat_flat))
 
         # Compor as composições verticalmente
         final_composition = cv2.vconcat((composition1, composition2, composition3))

@@ -48,8 +48,9 @@ if __name__ == '__main__':
         array_npy = np.load(os.path.join(args.dir,file))
         scores.append(array_npy)
 
-    mean = np.mean(scores, axis=0) * 255
+    mean = np.mean(scores, axis=0)
     np.save(f"mean_images/{args.method}/image_{args.dir.replace('/','_')}.npy", mean)
+    mean = mean*255
 
     if args.method == "grad-cam":
         matriz_heatmap = mean_grad_cam(mean)

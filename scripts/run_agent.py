@@ -21,7 +21,7 @@ parser.add_argument(
     "-n", "--num-games",
     type=int,
     metavar="N",
-    default=5,
+    default=200,
     help="Number of games to play. [default=5]")
 parser.add_argument(
     "-show", "--show-model",
