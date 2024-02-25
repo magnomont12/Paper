@@ -5,13 +5,7 @@ type_viz=$1
 for suffix in "${suffix_list[@]}"; do
     input_file="$type_viz/lista_de_pastas_$suffix.txt"
 
-    create_gradients="scripts/create_gradients.py"
-
-    create_visu="scripts/create_visu.py"
-
-    create_video="scripts/create_video.py"
-
-    create_mean="scripts/calculate_mean.py"
+    create_mean="scripts/calc_mean_step.py"
 
     if [ ! -f "$input_file" ]; then
         echo "Arquivo $input_file não encontrado."
@@ -20,8 +14,6 @@ for suffix in "${suffix_list[@]}"; do
 
     while IFS=, read -r model scenario image score blend; do
         echo "Model: $model | Scenario: $scenario | Image: $image | Score: $score | Blend: $blend"
-
         python3 "$create_mean" "$score" "$type_viz"
     done < "$input_file"
-  
 done

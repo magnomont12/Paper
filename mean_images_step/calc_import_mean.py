@@ -29,7 +29,7 @@ def calc_pearson_correlation(image1, image2):
     
     return pearson_correlation
 
-def calc_distances_original():
+def calc_distances_original(step):
     matrix = [
         ["image_grad-cam_scores_scores_basic_0_original_basic_basic", "image_grad-cam_scores_scores_basic_0_original_caco_caco", "image_grad-cam_scores_scores_basic_0_original_flat_flat", "image_grad-cam_scores_scores_basic_0_original_animated_animated"],
         ["image_grad-cam_scores_scores_caco_0_original_basic_basic", "image_grad-cam_scores_scores_caco_0_original_caco_caco", "image_grad-cam_scores_scores_caco_0_original_flat_flat", "image_grad-cam_scores_scores_caco_0_original_animated_animated"],
@@ -38,28 +38,28 @@ def calc_distances_original():
     ]
     matrix_h = [[[] for b in range(len(matrix[a]))] for a in range(len(matrix))]
     for a in range(len(matrix)):
-        main_element =os.path.join("mean_images","grad-cam",f"{matrix[a][a]}.png")
+        main_element =os.path.join("mean_images_step","grad-cam",step, f"{matrix[a][a]}.png")
         main_element = cv2.imread(main_element)
         for b in range(len(matrix[a])):
-            element = os.path.join("mean_images","grad-cam",f"{matrix[a][b]}.png")
+            element = os.path.join("mean_images_step","grad-cam",step, f"{matrix[a][b]}.png")
             element = cv2.imread(element)
             distance = calc_pearson_correlation(main_element, element)
             matrix_h[a][b] = distance
 
     matrix_v = [[[] for b in range(len(matrix[a]))] for a in range(len(matrix[0]))]
     for b in range(len(matrix[0])):
-        main_element = os.path.join("mean_images","grad-cam",f"{matrix[b][b]}.png")
+        main_element = os.path.join("mean_images_step","grad-cam",step,f"{matrix[b][b]}.png")
         main_element = cv2.imread(main_element)
         for a in range(len(matrix[b])):
-            element = os.path.join("mean_images","grad-cam",f"{matrix[a][b]}.png")
+            element = os.path.join("mean_images_step","grad-cam", step, f"{matrix[a][b]}.png")
             element = cv2.imread(element)
             distance = calc_pearson_correlation(main_element, element)
             matrix_v[b][a] = distance
             
-    matrix_h = pd.DataFrame(np.array(matrix_h)).to_csv("mean_images/matrix_h_step1.csv")
-    matrix_v = pd.DataFrame(np.array(matrix_v)).to_csv("mean_images/matrix_v_step1.csv")
+    matrix_h = pd.DataFrame(np.array(matrix_h)).to_csv(f"mean_images_step/matrix_h_{step}.csv")
+    matrix_v = pd.DataFrame(np.array(matrix_v)).to_csv(f"mean_images_step/matrix_v_{step}.csv")
 
-def calc_distance_blends():
+def calc_distance_blends(step):
     models = ["basic", "caco", "flat", "animated"]
     for model in models:
         matrix_blend = [
@@ -69,17 +69,18 @@ def calc_distance_blends():
         ]
         matrix_h = [[[] for b in range(len(matrix_blend[a]))] for a in range(len(matrix_blend))]
         for a in range(len(matrix_blend)):
-            main_element =os.path.join("mean_images","grad-cam",f"{matrix_blend[a][0]}.png")
+            main_element =os.path.join("mean_images_step","grad-cam",step,f"{matrix_blend[a][0]}.png")
             main_element = cv2.imread(main_element)
             for b in range(len(matrix_blend[a])):
-                element = os.path.join("mean_images","grad-cam",f"{matrix_blend[a][b]}.png")
+                element = os.path.join("mean_images_step","grad-cam",step,f"{matrix_blend[a][b]}.png")
                 element = cv2.imread(element)
                 distance = calc_pearson_correlation(main_element, element)
                 matrix_h[a][b] = distance
         matrix_h[0].append(None)
         matrix_h[1].append(None)
-        matrix_h = pd.DataFrame(np.array(matrix_h)).to_csv(f"mean_images/matrix_h_step_{model}.csv")
+        matrix_h = pd.DataFrame(np.array(matrix_h)).to_csv(f"mean_images_step/matrix_h_{step}_{model}.csv")
 
 if __name__ == "__main__":
-    calc_distances_original()
-    calc_distance_blends()
+    for step in range(1,11):
+        calc_distances_original(str(step))
+        calc_distance_blends(str(step))
