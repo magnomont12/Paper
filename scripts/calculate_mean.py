@@ -49,11 +49,11 @@ if __name__ == '__main__':
         scores.append(array_npy)
 
     mean = np.mean(scores, axis=0)
-    np.save(f"mean_images/{args.method}/image_{args.dir.replace('/','_')}.npy", mean)
+    np.save(f"mean_images_normal/{args.method}/image_{args.dir.replace('/','_')}.npy", mean)
     mean = mean*255
 
     if args.method == "grad-cam":
         matriz_heatmap = mean_grad_cam(mean)
     elif args.method == "ig" or args.method == "shap":
         matriz_heatmap = mean_ig(mean)
-    cv2.imwrite(f"mean_images/{args.method}/image_{args.dir.replace('/','_')}.png", matriz_heatmap)
+    cv2.imwrite(f"mean_images_normal/{args.method}/image_{args.dir.replace('/','_')}.png", matriz_heatmap)

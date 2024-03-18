@@ -43,10 +43,11 @@ def mean_ig(mean):
 
 if __name__ == '__main__':
     for step in range(1,11):
-        if not os.path.exists(f"mean_images_step/{args.method}/{step}"):
-            os.makedirs(f"mean_images_step/{args.method}/{step}")
+        if not os.path.exists(f"mean_images_step_normal/{args.method}/{step}"):
+            os.makedirs(f"mean_images_step_normal/{args.method}/{step}")
         path_scores = []
         for file in os.listdir(args.dir):
+            print(file)
             if ".npy" in file and file.split("_")[2] == str(step):
                 path_scores.append(file)
         scores = []
@@ -54,10 +55,10 @@ if __name__ == '__main__':
             array_npy = np.load(os.path.join(args.dir,file))
             scores.append(array_npy)
         mean = np.mean(scores, axis=0)
-        np.save(f"mean_images_step/{args.method}/{step}/image_{args.dir.replace('/','_')}.npy", mean)
+        np.save(f"mean_images_step_normal/{args.method}/{step}/image_{args.dir.replace('/','_')}.npy", mean)
         mean = mean*255
         if args.method == "grad-cam":
             matriz_heatmap = mean_grad_cam(mean)
         elif args.method == "ig" or args.method == "shap":
             matriz_heatmap = mean_ig(mean)
-        cv2.imwrite(f"mean_images_step/{args.method}/{step}/image_{args.dir.replace('/','_')}.png", matriz_heatmap)
+        cv2.imwrite(f"mean_images_step_normal/{args.method}/{step}/image_{args.dir.replace('/','_')}.png", matriz_heatmap)

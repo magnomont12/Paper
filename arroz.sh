@@ -12,8 +12,8 @@ for suffix in "${suffix_list[@]}"; do
         exit 1
     fi
 
-    while IFS=, read -r model scenario image score blend; do
+    while IFS=, read -r model scenario image score blend score_normal; do
         echo "Model: $model | Scenario: $scenario | Image: $image | Score: $score | Blend: $blend"
-        python3 "$create_mean" "$score" "$type_viz"
+        python3 "$create_mean" "$score_normal" "$type_viz"
     done < "$input_file"
 done

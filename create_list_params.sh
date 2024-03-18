@@ -20,18 +20,20 @@ create_new_folder() {
   local folder_scores="${file_without_extension/scenarios/scores_$suffix}"
   local folder_blend="${file_without_extension/scenarios/blend_$suffix}"
   
-  mkdir -p "$type_viz/scores/$folder_scores"
-  mkdir -p "$type_viz/blends/$folder_blend"
+  #mkdir -p "$type_viz/scores/$folder_scores"
+  mkdir -p "$type_viz/scores_normal/$folder_scores"
+  # mkdir -p "$type_viz/blends/$folder_blend"
 
-  echo "$path_model,$cfg_file,images/$folder_image,$type_viz/scores/$folder_scores,$type_viz/blends/$folder_blend" >> "$type_viz/$output_file"
+   echo "$path_model,$cfg_file,images/$folder_image,$type_viz/scores/$folder_scores,$type_viz/blends/$folder_blend,$type_viz/scores_normal/$folder_scores" >> "$type_viz/$output_file"
   
 }
 
 type_viz=$1
 echo "Type of visualization: $type_viz"
-mkdir -p "$type_viz"
-mkdir -p "$type_viz/scores"
-mkdir -p "$type_viz/blends"
+# mkdir -p "$type_viz"
+# mkdir -p "$type_viz/scores"
+mkdir -p "$type_viz/scores_normal"
+# mkdir -p "$type_viz/blends"
 
 suffix_list=('animated' 'basic' 'caco' 'flat')
 
